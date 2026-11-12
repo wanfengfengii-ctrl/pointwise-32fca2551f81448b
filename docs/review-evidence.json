@@ -1,0 +1,2189 @@
+{
+  "cases": [
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "not",
+            [
+              "eq",
+              "value",
+              20
+            ]
+          ],
+          "scan": [],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "not",
+            [
+              "eq",
+              "value",
+              20
+            ]
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Reported negation query on snapshot 1; NOT(eq value 20) must keep 10 and 30.",
+      "expected": [
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          },
+          {
+            "sensor": "c",
+            "value": 30
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "not",
+            [
+              "eq",
+              "value",
+              20
+            ]
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "id": "incident-not-eq",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 47,
+          "path": "scanlake/predicate.py",
+          "text": "        return not possible(source, metadata, schema, expr[1])"
+        },
+        {
+          "line": 20,
+          "path": "scanlake/planner.py",
+          "text": "            if not possible(self.source, data, schema, predicate):"
+        },
+        {
+          "line": 22,
+          "path": "scanlake/reader.py",
+          "text": "            if evaluate(plan[\"predicate\"], row) is True:"
+        }
+      ],
+      "opened": [
+        []
+      ],
+      "variant": "sample"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "and",
+            [
+              "eq",
+              "value",
+              10
+            ],
+            [
+              "eq",
+              "value",
+              20
+            ]
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "and",
+            [
+              "eq",
+              "value",
+              10
+            ],
+            [
+              "eq",
+              "value",
+              20
+            ]
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "AND of two contradictory tests on one field admits no TRUE row; exact metadata selection must prune, not read.",
+      "expected": [
+        []
+      ],
+      "expected_opened": [
+        []
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "and",
+            [
+              "eq",
+              "value",
+              10
+            ],
+            [
+              "eq",
+              "value",
+              20
+            ]
+          ],
+          "scan": [],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "id": "exact-and-shared-field",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 40,
+          "path": "scanlake/predicate.py",
+          "text": "    if op == \"and\":"
+        },
+        {
+          "line": 20,
+          "path": "scanlake/planner.py",
+          "text": "            if not possible(self.source, data, schema, predicate):"
+        }
+      ],
+      "opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "variant": "sample"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "device",
+            "quality"
+          ],
+          "predicate": [
+            "eq",
+            "quality",
+            7
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 1
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "device",
+            "quality"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "eq",
+            "quality",
+            7
+          ],
+          "schema": 2,
+          "snapshot": 1
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Field 4 is absent from writer schema 1; its logical value is initial_default 7, not schema 2 write_default 9.",
+      "expected": [
+        [
+          {
+            "device": "a",
+            "quality": 7
+          },
+          {
+            "device": "b",
+            "quality": 7
+          },
+          {
+            "device": "c",
+            "quality": 7
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "device",
+            "quality"
+          ],
+          "predicate": [
+            "eq",
+            "quality",
+            7
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 1
+        }
+      ],
+      "id": "projection-historical-default",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 16,
+          "path": "scanlake/values.py",
+          "text": "    by_name = {f[\"name\"]: f for f in writer}"
+        },
+        {
+          "line": 19,
+          "path": "scanlake/values.py",
+          "text": "        old = by_name.get(field[\"name\"])"
+        },
+        {
+          "line": 21,
+          "path": "scanlake/values.py",
+          "text": "                                field.get(\"write_default\"))"
+        }
+      ],
+      "opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "variant": "sample"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor"
+          ],
+          "predicate": [
+            "isnull",
+            "sensor"
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 3,
+          "snapshot": 1
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "isnull",
+            "sensor"
+          ],
+          "schema": 3,
+          "snapshot": 1
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Schema 3 reuses name sensor for stable id 5; writer schema 1's sensor is id 1 and must not bind the name.",
+      "expected": [
+        [
+          {
+            "sensor": null
+          },
+          {
+            "sensor": null
+          },
+          {
+            "sensor": null
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor"
+          ],
+          "predicate": [
+            "isnull",
+            "sensor"
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 3,
+          "snapshot": 1
+        }
+      ],
+      "id": "projection-name-reuse",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 16,
+          "path": "scanlake/values.py",
+          "text": "    by_name = {f[\"name\"]: f for f in writer}"
+        },
+        {
+          "line": 19,
+          "path": "scanlake/values.py",
+          "text": "        old = by_name.get(field[\"name\"])"
+        }
+      ],
+      "opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "variant": "sample"
+    },
+    {
+      "actual": [
+        [],
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "value",
+            21
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "value",
+            21
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "shared",
+          "predicate": [
+            "eq",
+            "value",
+            21
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        },
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "shared",
+          "predicate": [
+            "eq",
+            "value",
+            21
+          ],
+          "schema": 1,
+          "snapshot": 2
+        },
+        {
+          "action": "execute",
+          "plan_index": 1
+        }
+      ],
+      "description": "One long-lived Planner plans snapshot 1 then snapshot 2 with the same predicate/columns; cache must not leak the snapshot-1 scan.",
+      "expected": [
+        [],
+        [
+          {
+            "sensor": "b",
+            "value": 21
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "old-a"
+        ],
+        [
+          "global-b",
+          "day-c",
+          "old-a",
+          "day-c",
+          "new-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "value",
+            21
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "value",
+            21
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "global-b",
+                "day-c"
+              ],
+              "path": "old-a"
+            },
+            {
+              "deletes": [
+                "day-c"
+              ],
+              "path": "new-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 2
+        }
+      ],
+      "id": "cache-snapshot-key",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 12,
+          "path": "scanlake/planner.py",
+          "text": "        key = json.dumps([predicate, columns], sort_keys=True)"
+        },
+        {
+          "line": 13,
+          "path": "scanlake/planner.py",
+          "text": "        if key in self.cache:"
+        },
+        {
+          "line": 14,
+          "path": "scanlake/planner.py",
+          "text": "            return copy.deepcopy(self.cache[key])"
+        }
+      ],
+      "opened": [
+        [
+          "old-a"
+        ],
+        [
+          "old-a"
+        ]
+      ],
+      "variant": "sample"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "b"
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "global-b"
+              ],
+              "path": "same-seq"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 4
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "device",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "eq",
+            "device",
+            "b"
+          ],
+          "schema": 2,
+          "snapshot": 4
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Data and delete both at sequence 2: data survives an equal-sequence delete.",
+      "expected": [
+        [
+          {
+            "device": "b",
+            "value": 100
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "same-seq"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "b"
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "same-seq"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 4
+        }
+      ],
+      "id": "delete-equal-sequence",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 25,
+          "path": "scanlake/planner.py",
+          "text": "                if delete[\"sequence\"] < data[\"sequence\"]:"
+        },
+        {
+          "line": 18,
+          "path": "scanlake/reader.py",
+          "text": "            if any(delete_key(source, ids, raw, writer) in keys"
+        }
+      ],
+      "opened": [
+        [
+          "global-b",
+          "same-seq"
+        ]
+      ],
+      "variant": "equal_sequence"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "x"
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "scope-del"
+              ],
+              "path": "scope-a"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 5
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "device",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "eq",
+            "device",
+            "x"
+          ],
+          "schema": 2,
+          "snapshot": 5
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Delete partition [0] under truncate:10(value) is not the same scope as data partition [0] under day(at).",
+      "expected": [
+        [
+          {
+            "device": "x",
+            "value": 50
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "scope-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "x"
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "scope-a"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 5
+        }
+      ],
+      "id": "delete-scope-evolved-spec",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 27,
+          "path": "scanlake/planner.py",
+          "text": "                if delete[\"partition\"] and delete[\"partition\"] != data[\"partition\"]:"
+        },
+        {
+          "line": 38,
+          "path": "scanlake/values.py",
+          "text": "def partition(source, spec_id, row, writer):"
+        }
+      ],
+      "opened": [
+        [
+          "scope-del",
+          "scope-a"
+        ]
+      ],
+      "variant": "scope_evolved"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "k"
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "scope-del2"
+              ],
+              "path": "scope-b"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 6
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "device",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "eq",
+            "device",
+            "k"
+          ],
+          "schema": 2,
+          "snapshot": 6
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Planner legitimately attaches a delete; execution must still check row-level scope, so value 5 dies, value 50 survives.",
+      "expected": [
+        [
+          {
+            "device": "k",
+            "value": 50
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "scope-del2",
+          "scope-b"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "k"
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "scope-del2"
+              ],
+              "path": "scope-b"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 6
+        }
+      ],
+      "id": "delete-scope-execution",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 18,
+          "path": "scanlake/reader.py",
+          "text": "            if any(delete_key(source, ids, raw, writer) in keys"
+        },
+        {
+          "line": 19,
+          "path": "scanlake/reader.py",
+          "text": "                   for ids, keys in sets):"
+        }
+      ],
+      "opened": [
+        [
+          "scope-del2",
+          "scope-b"
+        ]
+      ],
+      "variant": "scope_execution"
+    },
+    {
+      "actual": [
+        [
+          {
+            "device": "z",
+            "value": 1
+          }
+        ]
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "z"
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "cnt-del"
+              ],
+              "path": "cnt-a"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 7
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "device",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "eq",
+            "device",
+            "z"
+          ],
+          "schema": 2,
+          "snapshot": 7
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "A delete with count 0 has no keys and must not be attached or opened.",
+      "expected": [
+        [
+          {
+            "device": "z",
+            "value": 1
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "cnt-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "z"
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "cnt-a"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 7
+        }
+      ],
+      "id": "delete-zero-count",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 23,
+          "path": "scanlake/planner.py",
+          "text": "            for delete_path in snap[\"deletes\"]:"
+        },
+        {
+          "line": 29,
+          "path": "scanlake/planner.py",
+          "text": "                deletes.append(delete_path)"
+        }
+      ],
+      "opened": [
+        [
+          "cnt-del",
+          "cnt-a"
+        ]
+      ],
+      "variant": "delete_zero_count"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "sensor",
+            "a"
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "empty-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 8
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "eq",
+            "sensor",
+            "a"
+          ],
+          "schema": 1,
+          "snapshot": 8
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "A data file with count 0 has no row and cannot admit a TRUE predicate; it must not be opened.",
+      "expected": [
+        []
+      ],
+      "expected_opened": [
+        []
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "sensor",
+            "a"
+          ],
+          "scan": [],
+          "schema": 1,
+          "snapshot": 8
+        }
+      ],
+      "id": "data-empty-file",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 50,
+          "path": "scanlake/predicate.py",
+          "text": "    if metric is None:"
+        },
+        {
+          "line": 51,
+          "path": "scanlake/predicate.py",
+          "text": "        return True"
+        }
+      ],
+      "opened": [
+        [
+          "empty-a"
+        ]
+      ],
+      "variant": "empty_data"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "isnull",
+            "value"
+          ],
+          "scan": [],
+          "schema": 1,
+          "snapshot": 9
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "isnull",
+            "value"
+          ],
+          "schema": 1,
+          "snapshot": 9
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Missing null_count means unknown; a file with a null row can admit isnull(value).",
+      "expected": [
+        [
+          {
+            "sensor": "a",
+            "value": null
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "null-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "isnull",
+            "value"
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "null-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 9
+        }
+      ],
+      "id": "isnull-missing-null-count",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 52,
+          "path": "scanlake/predicate.py",
+          "text": "    if op == \"isnull\":"
+        },
+        {
+          "line": 53,
+          "path": "scanlake/predicate.py",
+          "text": "        return metric.get(\"null_count\", 0) > 0"
+        }
+      ],
+      "opened": [
+        []
+      ],
+      "variant": "missing_null_count"
+    },
+    {
+      "actual": [
+        [
+          {
+            "device": "k",
+            "value": 10
+          }
+        ]
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "k"
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "dk-del"
+              ],
+              "path": "dk-a"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 10
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "device",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "eq",
+            "device",
+            "k"
+          ],
+          "schema": 2,
+          "snapshot": 10
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Equality id 4 is absent from delete writer schema 1, so the delete key uses initial_default 7 and suppresses the data row.",
+      "expected": [
+        []
+      ],
+      "expected_opened": [
+        [
+          "dk-del",
+          "dk-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "device",
+            "k"
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "dk-del"
+              ],
+              "path": "dk-a"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 10
+        }
+      ],
+      "id": "delete-key-initial-default",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 14,
+          "path": "scanlake/reader.py",
+          "text": "            keys = {tuple(row.get(str(fid)) for fid in delete[\"equality_ids\"])"
+        },
+        {
+          "line": 9,
+          "path": "scanlake/values.py",
+          "text": "def logical(row, writer, field):"
+        },
+        {
+          "line": 12,
+          "path": "scanlake/values.py",
+          "text": "    return field[\"initial_default\"]"
+        }
+      ],
+      "opened": [
+        [
+          "dk-del",
+          "dk-a"
+        ]
+      ],
+      "variant": "delete_key_default"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            15
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "part-a"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 11
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "device",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "lt",
+            "value",
+            15
+          ],
+          "schema": 2,
+          "snapshot": 11
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Loose metric bounds admit value 10, but the file's own partition truncate:10=[20] restricts values to 20..29, so lt 15 has no TRUE row.",
+      "expected": [
+        []
+      ],
+      "expected_opened": [
+        []
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            15
+          ],
+          "scan": [],
+          "schema": 2,
+          "snapshot": 11
+        }
+      ],
+      "id": "data-own-partition",
+      "kind": "defect",
+      "locations": [
+        {
+          "line": 59,
+          "path": "scanlake/predicate.py",
+          "text": "    if op == \"lt\":"
+        },
+        {
+          "line": 60,
+          "path": "scanlake/predicate.py",
+          "text": "        return metric.get(\"lower\", expr[2] - 1) < expr[2]"
+        },
+        {
+          "line": 20,
+          "path": "scanlake/planner.py",
+          "text": "            if not possible(self.source, data, schema, predicate):"
+        }
+      ],
+      "opened": [
+        [
+          "part-a"
+        ]
+      ],
+      "variant": "own_partition"
+    },
+    {
+      "actual": [
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          }
+        ]
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            15
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "lt",
+            "value",
+            15
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Legitimate metadata pruning: lt value 15 prunes to old-a and reads only old-a.",
+      "expected": [
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            15
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "id": "positive-prune-lt",
+      "kind": "positive",
+      "locations": [
+        {
+          "line": 59,
+          "path": "scanlake/predicate.py",
+          "text": "    if op == \"lt\":"
+        },
+        {
+          "line": 60,
+          "path": "scanlake/predicate.py",
+          "text": "        return metric.get(\"lower\", expr[2] - 1) < expr[2]"
+        }
+      ],
+      "opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "variant": "sample"
+    },
+    {
+      "actual": [
+        [
+          {
+            "device": "e",
+            "value": 99
+          }
+        ]
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "value",
+            99
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "next"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 3
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "device",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "eq",
+            "value",
+            99
+          ],
+          "schema": 2,
+          "snapshot": 3
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Legitimate multi-file pruning: eq value 99 selects only next; old-a and new-a bounds exclude 99.",
+      "expected": [
+        [
+          {
+            "device": "e",
+            "value": 99
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "next"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "device",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "value",
+            99
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "next"
+            }
+          ],
+          "schema": 2,
+          "snapshot": 3
+        }
+      ],
+      "id": "positive-prune-eq-multifile",
+      "kind": "positive",
+      "locations": [
+        {
+          "line": 56,
+          "path": "scanlake/predicate.py",
+          "text": "    if op == \"eq\":"
+        },
+        {
+          "line": 57,
+          "path": "scanlake/predicate.py",
+          "text": "        return (metric.get(\"lower\", expr[2]) <= expr[2] <="
+        },
+        {
+          "line": 58,
+          "path": "scanlake/predicate.py",
+          "text": "                metric.get(\"upper\", expr[2]))"
+        }
+      ],
+      "opened": [
+        [
+          "next"
+        ]
+      ],
+      "variant": "sample"
+    },
+    {
+      "actual": [
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          },
+          {
+            "sensor": "b",
+            "value": 20
+          },
+          {
+            "sensor": "c",
+            "value": 30
+          }
+        ]
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "not",
+            [
+              "eq",
+              "value",
+              99
+            ]
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "not",
+            [
+              "eq",
+              "value",
+              99
+            ]
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Legitimate complement pruning: NOT(eq value 99) is certainly TRUE inside old-a's bounds.",
+      "expected": [
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          },
+          {
+            "sensor": "b",
+            "value": 20
+          },
+          {
+            "sensor": "c",
+            "value": 30
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "not",
+            [
+              "eq",
+              "value",
+              99
+            ]
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "id": "positive-not-prune",
+      "kind": "positive",
+      "locations": [
+        {
+          "line": 47,
+          "path": "scanlake/predicate.py",
+          "text": "        return not possible(source, metadata, schema, expr[1])"
+        }
+      ],
+      "opened": [
+        [
+          "old-a"
+        ]
+      ],
+      "variant": "sample"
+    },
+    {
+      "actual": [
+        []
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "value",
+            20
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "global-b",
+                "day-c"
+              ],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 2
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "eq",
+            "value",
+            20
+          ],
+          "schema": 1,
+          "snapshot": 2
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Statistics describe physical rows before deletion: old-a is still a candidate even though every matching row is deleted.",
+      "expected": [
+        []
+      ],
+      "expected_opened": [
+        [
+          "global-b",
+          "day-c",
+          "old-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "eq",
+            "value",
+            20
+          ],
+          "scan": [
+            {
+              "deletes": [
+                "global-b",
+                "day-c"
+              ],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 2
+        }
+      ],
+      "id": "positive-delete-pre-deletion",
+      "kind": "positive",
+      "locations": [
+        {
+          "line": 25,
+          "path": "scanlake/planner.py",
+          "text": "                if delete[\"sequence\"] < data[\"sequence\"]:"
+        },
+        {
+          "line": 18,
+          "path": "scanlake/reader.py",
+          "text": "            if any(delete_key(source, ids, raw, writer) in keys"
+        }
+      ],
+      "opened": [
+        [
+          "global-b",
+          "day-c",
+          "old-a"
+        ]
+      ],
+      "variant": "sample"
+    },
+    {
+      "actual": [
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          },
+          {
+            "sensor": "b",
+            "value": 20
+          }
+        ],
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          },
+          {
+            "sensor": "b",
+            "value": 20
+          }
+        ],
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          },
+          {
+            "sensor": "b",
+            "value": 20
+          }
+        ]
+      ],
+      "actual_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            25
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            25
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            45
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "calls": [
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "lt",
+            "value",
+            25
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "lt",
+            "value",
+            25
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "action": "plan",
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "planner": "P1",
+          "predicate": [
+            "lt",
+            "value",
+            45
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        },
+        {
+          "action": "execute",
+          "plan_index": 1
+        },
+        {
+          "action": "execute",
+          "plan_index": 0
+        }
+      ],
+      "description": "Same-planner cache reuse for identical arguments and re-execution of an earlier plan after a later plan call must remain pinned.",
+      "expected": [
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          },
+          {
+            "sensor": "b",
+            "value": 20
+          }
+        ],
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          },
+          {
+            "sensor": "b",
+            "value": 20
+          }
+        ],
+        [
+          {
+            "sensor": "a",
+            "value": 10
+          },
+          {
+            "sensor": "b",
+            "value": 20
+          }
+        ]
+      ],
+      "expected_opened": [
+        [
+          "old-a"
+        ],
+        [
+          "old-a"
+        ],
+        [
+          "old-a"
+        ]
+      ],
+      "expected_plans": [
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            25
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            25
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        },
+        {
+          "columns": [
+            "sensor",
+            "value"
+          ],
+          "predicate": [
+            "lt",
+            "value",
+            45
+          ],
+          "scan": [
+            {
+              "deletes": [],
+              "path": "old-a"
+            }
+          ],
+          "schema": 1,
+          "snapshot": 1
+        }
+      ],
+      "id": "positive-plan-reexec",
+      "kind": "positive",
+      "locations": [
+        {
+          "line": 11,
+          "path": "scanlake/planner.py",
+          "text": "    def plan(self, snapshot_id, schema_id, predicate, columns):"
+        },
+        {
+          "line": 13,
+          "path": "scanlake/planner.py",
+          "text": "        if key in self.cache:"
+        },
+        {
+          "line": 5,
+          "path": "scanlake/reader.py",
+          "text": "def execute(source, plan):"
+        }
+      ],
+      "opened": [
+        [
+          "old-a"
+        ],
+        [
+          "old-a"
+        ],
+        [
+          "old-a"
+        ]
+      ],
+      "variant": "sample"
+    }
+  ]
+}
